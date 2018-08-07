@@ -36,11 +36,11 @@ exports.model = {
   },
   mysql: {
     handle: mysql,
-    database: '',
-    prefix: 'think_',
+    database: 'test_thinkjs_database', // 本地数据库
+    prefix: 'demo_', // 表名前缀
     encoding: 'utf8',
     host: '127.0.0.1',
-    port: '',
+    port: '3360',
     user: 'root',
     password: 'mysql2018',
     dateStrings: true
@@ -71,13 +71,13 @@ exports.session = {
  * @type {Object}
  */
 exports.view = {
-  type: 'nunjucks',
-  common: {
+  type: 'nunjucks', // 默认的模板引擎为 nunjucks
+  common: { //通用配置
     viewPath: path.join(think.ROOT_PATH, 'view'),
     sep: '_',
     extname: '.html'
   },
-  nunjucks: {
+  nunjucks: { // nunjucks 的具体配置
     handle: nunjucks
   }
 };
