@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>New ThinkJS Application</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      font-size: 16px;
+      line-height: 20px;
+      font-family: arial;
+    }
+
+    a, a:visited {
+      color: #337ab7;
+      text-decoration: none;
+    }
+
+    header {
+      padding: 70px 0 70px 0;
+      background-color: #4A6495
+    }
+
+    h1 {
+      font-size: 36px;
+      color: #fff;
+      font-weight: normal;
+    }
+
+    code {
+      padding: 2px 4px;
+      font-size: 90%;
+      color: #c7254e;
+      background-color: #f9f2f4;
+      border-radius: 4px;
+    }
+
+    .content {
+      width: 1000px;
+      margin: auto
+    }
+
+    .wrap {
+      width: 1000px;
+      margin: auto
+    }
+
+    .content {
+      margin-top: 80px;
+    }
+
+    .list {
+      width: 800px;
+    }
+
+    .list .item {
+      position: relative;
+      padding-left: 70px;
+      margin-top: 50px;
+    }
+
+    .list .item .step {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      top: -3px;
+      left: 0;
+      border: 5px solid #4A6495;
+      border-radius: 23px;
+      text-align: center;
+      line-height: 36px;
+    }
+
+    .list .item h2 {
+      font-size: 24px;
+      font-weight: normal;
+    }
+
+    .list .item p {
+      line-height: 30px;
+      margin-top: 10px
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>A New App Created By ThinkJS</h1>
+  </div>
+</header>
+<div class="content">
+  <div class="form">
+    <div>
+      用户名 ：<input id="username" placeholder="用户名"/>
+      <button type="button" onclick="checkUsername()">用户名是否已存在</button>
+      <span id="showRes" style="color: #f00;"></span>
+    </div>
+    <div>
+      密码 ：<input id="psw" placeholder="密码"/>
+    </div>
+    <div>
+      <button type="button" onclick="addRegister()">提交</button>
+    </div>
+    <div>
+      <textarea id="test-response-text"></textarea>
+    </div>
+  </div>
+</div>
+<script>
+  'use strict';
+
+  function myAjax(method, path, success, fail) {
+    /*    myAjax.prototype.success = function (text) {
+          var textarea = document.getElementById('test-response-text');
+          textarea.value = text;
+        }*/
+    /*    function success (text) {
+          var textarea = document.getElementById('test-response-text');
+          textarea.value = text;
+        }
+        function fail(code) {
+          var textarea = document.getElementById('test-response-text');
+          textarea.value = 'Error code: ' + code;
+        }*/
+
+    var request = new XMLHttpRequest(); // 新建XMLHttpRequest对象
+
+    request.onreadystatechange = function () { // 状态发生变化时，函数被回调
+      if (request.readyState === 4) { // 成功完成
+        // 判断响应结果:
+        if (request.status === 200) {
+          // 成功，通过responseText拿到响应的文本:
+          return success(request.responseText);
+        } else {
+          // 失败，根据响应码判断失败原因:
+          return fail(request.status);
+        }
+      } else {
+        // HTTP请求还在继续...
+      }
+    }
+    request.open(method, path);
+    request.send();
+  }
+
+  // 查看用户名是否已存在 使用GET
+  function checkUsername() {
+    if (document.getElementById('username').value) {
+      myAjax('GET', '/user/query?username=' + document.getElementById('username').value, function success(text) {
+        var data = JSON.parse(text);
+        document.getElementById('showRes').innerHTML = data.msg;
+      }, function fail(code) {
+        var textarea = document.getElementById('test-response-text');
+        textarea.value = 'Error code: ' + code;
+      })
+    } else {
+      document.getElementById('showRes').innerHTML = '请输入用户名';
+    }
+  }
+
+  function addRegister() {
+    console.log(document.getElementById('username').value)
+    console.log(document.getElementById('psw').value)
+
+    myAjax('GET', '/user/',
+      function success(text) {
+        var textarea = document.getElementById('test-response-text');
+        textarea.value = text;
+      }, function fail(code) {
+        var textarea = document.getElementById('test-response-text');
+        textarea.value = 'Error code: ' + code;
+      })
+  }
+</script>
+</body>
+</html>

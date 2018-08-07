@@ -17,7 +17,6 @@ module.exports = class extends Base {
   // 查看
   async queryAction() {
     const username = this.get('username'); // 传值是否传username测试用：http://localhost:8361/user/userName?username=admin，
-    console.log(username);
     const model = this.model('user'); // SELECT 用户表，因配置加了prefix所以是里查找到的表是'demo_user'
     const data = await model.where({
       'username': username

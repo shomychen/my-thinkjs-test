@@ -36,11 +36,11 @@ exports.model = {
   },
   mysql: {
     handle: mysql,
-    database: 'test_thinkjs_database', // 本地数据库
+    database: 'demo_database', // 本地数据库
     prefix: 'demo_', // 表名前缀
     encoding: 'utf8',
     host: '127.0.0.1',
-    port: '3360',
+    port: '3306',
     user: 'root',
     password: 'mysql2018',
     dateStrings: true
