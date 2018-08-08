@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>New ThinkJS Application</title>
+  <script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
   <style>
+
     * {
       padding: 0;
       margin: 0;
@@ -28,6 +30,16 @@
       font-weight: normal;
     }
 
+    h3 {
+      font-size: 20px;
+      padding-bottom: 20px;
+    }
+
+    .wrap {
+      width: 1000px;
+      margin: auto;
+    }
+
     code {
       padding: 2px 4px;
       font-size: 90%;
@@ -36,96 +48,156 @@
       border-radius: 4px;
     }
 
+    .result,
     .content {
-      width: 1000px;
-      margin: auto
-    }
-
-    .wrap {
       width: 1000px;
       margin: auto
     }
 
     .content {
       margin-top: 80px;
+      display: flex;
     }
 
-    .list {
-      width: 800px;
+    .form {
+      flex: 1;
     }
 
-    .list .item {
+    .form-area {
+      display: flex;
+      margin-bottom: 15px;
+    }
+
+    .form-area label {
+      width: 80px;
+      text-align: right;
+    }
+
+    .form-item {
       position: relative;
-      padding-left: 70px;
-      margin-top: 50px;
-    }
-
-    .list .item .step {
-      position: absolute;
-      width: 36px;
-      height: 36px;
-      top: -3px;
-      left: 0;
-      border: 5px solid #4A6495;
-      border-radius: 23px;
-      text-align: center;
-      line-height: 36px;
-    }
-
-    .list .item h2 {
-      font-size: 24px;
-      font-weight: normal;
-    }
-
-    .list .item p {
-      line-height: 30px;
-      margin-top: 10px
     }
   </style>
 </head>
 <body>
 <header>
   <div class="wrap">
-    <h1>A New App Created By ThinkJS</h1>
+    <h1>表单操作</h1>
   </div>
 </header>
 <div class="content">
   <div class="form">
-    <div>
-      用户名 ：<input id="username" placeholder="用户名"/>
-      <button type="button" onclick="checkUsername()">用户名是否已存在</button>
-      <span id="showRes" style="color: #f00;"></span>
+    <h3 class="form-title">添加用户</h3>
+    <div class="form-area">
+      <label>用户名 ：</label>
+      <div class="form-item">
+        <input id="username" placeholder="请输入用户名"/>
+        <button type="button" id="checkUser">检测</button>
+        <span id="showRes" style="color: #f00;"></span>
+      </div>
     </div>
-    <div>
-      密码 ：<input id="psw" placeholder="密码"/>
+    <div class="form-area">
+      <label>密码 ：</label>
+      <div class="form-item">
+        <input id="psw" placeholder="请输入密码"/>
+      </div>
     </div>
-    <div>
-      <button type="button" onclick="addRegister()">提交</button>
+    <div class="form-area">
+      <label></label>
+      <div class="form-item">
+        <button type="button" id="addRegister">提交</button>
+      </div>
     </div>
-    <div>
-      <textarea id="test-response-text"></textarea>
+  </div>
+  <div class="form">
+    <h3 class="form-title">删除用户</h3>
+    <div class="form-area">
+      <label>用户名 ：</label>
+      <div class="form-item">
+        <input id="delUsername" placeholder="请输入用户名"/>
+      </div>
+    </div>
+    <div class="form-area">
+      <label></label>
+      <div class="form-item">
+        <button type="button" id="deleteUser">删除</button>
+      </div>
     </div>
   </div>
 </div>
+<div class="result">
+  <textarea id="test-response-text" style="padding: 5px;width: 400px;height: 100px" placeholder="返回结果展示"></textarea>
+</div>
 <script>
-  'use strict';
+  $(function () {
+    // 查：查看用户名是否已存在 使用GET
+    $("#checkUser").click(function () {
+      $.ajax({
+        type: "GET",
+        url: "/user/query",
+        dataType: "json",
+        data: {
+          username: document.getElementById('username').value
+        },
+        success: function (data) {
+          document.getElementById('showRes').innerHTML = data.msg;
+        }
+      });
+    });
+    // 增：添加新用户 使用POST
+    $("#addRegister").click(function () {
+      var username = document.getElementById('username').value
+      var psw = document.getElementById('psw').value
+      if (!username) {
+        alert('请输入用户名');
+        return;
+      }
+      if (!psw) {
+        alert('请输入密码');
+        return;
+      }
+      $.ajax({
+        type: "POST",
+        url: "/register/add",
+        dataType: "json",
+        data: {
+          username: username,
+          password: psw
+        },
+        success: function (data) {
+          alert(data.msg)
+          var textarea = document.getElementById('test-response-text');
+          textarea.value = JSON.stringify(data);
+        }
+      });
+    });
+    // 删：删除用户 使用POST
+    $("#deleteUser").click(function () {
+      var username = document.getElementById('delUsername').value
+      if (!username) {
+        alert('请输入用户名');
+        return;
+      }
+      $.ajax({
+        type: "POST",
+        url: "/register/delete",
+        dataType: "json",
+        data: {
+          username: username
+        },
+        success: function (data) {
+          alert(data.msg)
+          var textarea = document.getElementById('test-response-text');
+          textarea.value = JSON.stringify(data);
+          if (data.status == 200) {
+            document.getElementById('delUsername').value = ''
+          }
+        }
+      });
+    });
+  })
 
   function myAjax(method, path, success, fail) {
-    /*    myAjax.prototype.success = function (text) {
-          var textarea = document.getElementById('test-response-text');
-          textarea.value = text;
-        }*/
-    /*    function success (text) {
-          var textarea = document.getElementById('test-response-text');
-          textarea.value = text;
-        }
-        function fail(code) {
-          var textarea = document.getElementById('test-response-text');
-          textarea.value = 'Error code: ' + code;
-        }*/
-
     var request = new XMLHttpRequest(); // 新建XMLHttpRequest对象
-
     request.onreadystatechange = function () { // 状态发生变化时，函数被回调
       if (request.readyState === 4) { // 成功完成
         // 判断响应结果:
@@ -144,7 +216,6 @@
     request.send();
   }
 
-  // 查看用户名是否已存在 使用GET
   function checkUsername() {
     if (document.getElementById('username').value) {
       myAjax('GET', '/user/query?username=' + document.getElementById('username').value, function success(text) {
@@ -160,10 +231,17 @@
   }
 
   function addRegister() {
-    console.log(document.getElementById('username').value)
-    console.log(document.getElementById('psw').value)
-
-    myAjax('GET', '/user/',
+    var username = document.getElementById('username').value
+    var psw = document.getElementById('psw').value
+    if (!username) {
+      alert('请输入用户名');
+      return;
+    }
+    if (!psw) {
+      alert('请输入密码');
+      return;
+    }
+    myAjax('POST', '/register/add',
       function success(text) {
         var textarea = document.getElementById('test-response-text');
         textarea.value = text;
