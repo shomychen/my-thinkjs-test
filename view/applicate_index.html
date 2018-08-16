@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="format-detection" content="telephone=yes">
+  <title>申请入驻</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
+  <link rel="stylesheet" href="static/css/index.css">
+</head>
+<body>
+<div id="app" class="wrap">
+  <div class="header">
+    <div class="header-ad">
+      <!--<img src="static/image/ad-icon.png"/>-->
+    </div>
+  </div>
+  <div class="container">
+    <div class="form ra-box">
+      <div class="title">— 入驻申请 —</div>
+      <div class="form-items">
+        <mt-field label="姓名" placeholder="请输入姓名" v-model="info.name"></mt-field>
+        <mt-field label="年龄" placeholder="请输入年龄" type="number" v-model="info.age"></mt-field>
+        <mt-field label="教授科目" placeholder="请输入教授科目" v-model="info.subject"></mt-field>
+        <mt-field label="教龄" placeholder="请输入教龄" type="number" v-model="info.exAge"></mt-field>
+        <mt-field label="擅长科目及年级" placeholder="多个科目或年级以,隔开" v-model="info.goodSubject"></mt-field>
+        <mt-field label="教学经历" placeholder="请输入教学经历" type="textarea" rows="4" v-model="info.experience"></mt-field>
+        <mt-field label="教学特色" placeholder="请输入教学特色" type="textarea" rows="4" v-model="info.characteristic"></mt-field>
+        <mt-field label="教学成功案例" placeholder="请输入教学成功案例" type="textarea" rows="4" v-model="info.cases"></mt-field>
+        <mt-field label="获奖证书" placeholder="请输入获奖证书，多个以,隔开" v-model="info.certificate"></mt-field>
+        <div class="mint-cell mint-field">
+          <div class="mint-cell-wrapper">
+            <div class="mint-cell-title"><span class="mint-cell-text">意向入驻校区</span></div>
+            <div class="mint-cell-value">
+              <div class="school-cell" @click="popupSchool = true">
+                <span v-if="!info.school">请选择校区</span>
+                {{info.school}}<i class="mint-cell-allow-right"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <mt-popup v-model="popupSchool" class="school-popup" position="bottom">
+          <div class="school-list" v-if="popupSchool">
+            <div class="school-item" v-for="(item, index) in schoolValues" :key="index" @click="handleSchoolPicker(item)">
+              {{item}}<i v-if="item === info.school" class="mintui mintui-success"></i>
+            </div>
+          </div>
+        </mt-popup>
+        <mt-field label="联系电话" placeholder="请输入联系电话" type="tel" v-model="info.phone" :attr="{maxLength: 11}"></mt-field>
+      </div>
+      <div class="form-submit">
+        <mt-button @click.native="handleClick" type="primary" size="large">提交</mt-button>
+      </div>
+    </div>
+    <div class="contact ra-box">
+      <div class="title">— 联系方式 —</div>
+      <div class="contact-list">
+        <div class="contact-item">
+          <div><img src="/static/image/ewm1.jpg" width="90"/></div>
+          <div class="phone">186 7670 1701</div>
+          <div class="name">(唐老师)</div>
+        </div>
+        <div class="contact-item">
+          <div><img src="/static/image/ewm2.jpg" width="90"/></div>
+          <div class="phone">135 3061 0403</div>
+          <div class="name">(王老师)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/static/js/vue.js"></script>
+<script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      info: {
+        name: null,
+        age: null, // 年龄
+        subject: null, // 教授科目
+        exAge: null, // 教龄
+        goodSubject: null,
+        experience: null, // 教学经历
+        characteristic: null, // 教学特色
+        cases: null, // 教学成功案例
+        school: null,
+        certificate: null,
+        phone: null,
+      },
+      popupPhoto: false,
+      popupIndex: 0,
+      popupSchool: false,
+      schoolValues: ['红岭校区', '百花校区', '五和校区', '宝安校区'],
+    },
+    methods: {
+      handleClick: function (event) {
+        var _this = this;
+        if (!_this.info.name || !_this.info.phone) {
+          _this.$messagebox('提示', '请填写' + (!_this.info.name ? '姓名' : '') + (!_this.info.phone ? '手机号码' : '') + '！');
+        } else {
+          axios.post('/applicate/add', {
+            name: _this.info.name,
+            age: _this.info.age, // 年龄
+            subject: _this.info.subject, // 教授科目
+            exAge: _this.info.exAge, // 教龄
+            goodSubject: _this.info.goodSubject,
+            experience: _this.info.experience, // 教学经历
+            characteristic: _this.info.characteristic, // 教学特色
+            cases: _this.info.cases, // 教学成功案例
+            school: _this.info.school,
+            certificate: _this.info.certificate,
+            phone: _this.info.phone,
+          })
+            .then(function (res) {
+              if (res.errorCode === 999 || res.errorCode === '999') {
+                _this.$toast(res.msg);
+              } else {
+                // 提交成功
+                _this.$toast(res.msg);
+                _this.info = {
+                  name: null,
+                  age: null, // 年龄
+                  subject: null, // 教授科目
+                  exAge: null, // 教龄
+                  goodSubject: null,
+                  experience: null, // 教学经历
+                  characteristic: null, // 教学特色
+                  cases: null, // 教学成功案例
+                  school: null,
+                  certificate: null,
+                  phone: null,
+                }
+              }
+            })
+            .catch(function (err) {
+              _this.$toast(res.msg);
+            });
+        /*  axios({
+            headers: {
+              'Access-Control-Allow-Origin': '*'
+            },//设置跨域请求头
+            method: "POST",//请求方式
+            url: "http://127.0.0.1:8362/applicate/add",//请求地址
+            data: {
+              name: _this.info.name,
+              age: _this.info.age, // 年龄
+              subject: _this.info.subject, // 教授科目
+              exAge: _this.info.exAge, // 教龄
+              goodSubject: _this.info.goodSubject,
+              experience: _this.info.experience, // 教学经历
+              characteristic: _this.info.characteristic, // 教学特色
+              cases: _this.info.cases, // 教学成功案例
+              school: _this.info.school,
+              certificate: _this.info.certificate,
+              phone: _this.info.phone,
+            }
+          })
+            .then(function (res) {
+              // 返回值
+              if (res.errorCode === 999 || res.errorCode === '999') {
+                _this.$toast(res.msg);
+              } else {
+                _this.$toast(res.msg);
+              }
+            })
+            .catch(function (err) {
+              _this.$toast(res.msg);
+            });*/
+        }
+      },
+      handleSchoolPicker: function (value) {
+        this.info.school = value;
+        this.popupSchool = false;
+      }
+    },
+    mounted: function () {
+    }
+  })
+
+</script>
+</body>
+</html>
