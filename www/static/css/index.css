@@ -1,9 +1,9 @@
 * {
-    padding: 0;
-    margin:0;
+  padding: 0;
+  margin:0;
 }
 body{
-    font-family: '微软雅黑' !important;
+  font-family: '微软雅黑' !important;
   background: linear-gradient(to left,#9a49e6,#845de9);
 }
 .wrap .header{
@@ -39,6 +39,11 @@ body{
   font-size: 18px;
   font-weight: bold;
 }
+/*组件样式更改*/
+.mint-field .mint-cell-title{
+  align-self: start;
+  padding-top: 16px;
+}
 .mint-cell-wrapper{
   font-size: 14px;
 }
@@ -49,45 +54,54 @@ body{
   background: linear-gradient(to left,#9a49e6,#845de9);
 }
 .form-submit{
-    padding:15px 10px;
+  padding:15px 10px;
 }
 
 /*校区选择*/
 .school-popup{
-    width: 100%;
+  width: 100%;
 }
 .school-cell{
-    width: 100%;
-    min-height: 16px;
+  width: 100%;
+  min-height: 16px;
 }
 .school-cell span {
-    color: #c1c1c1;
+  color: #c1c1c1;
 }
 .school-list .school-item{
-    position: relative;
-    height: 36px;
-    line-height: 36px;
-    padding:0 10px;
+  position: relative;
+  padding:5px 15px 5px 10px;
   font-size: 14px;
+}
+.school-list .school-item .name{
+  font-size: 14px;
+  color: #333;
+}
+.school-list .school-item .address{
+  font-size: 12px;
+  color: #999;
 }
 
 .school-list .school-item:before{
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    right: auto;
-    top: auto;
-    height: 1px;
-    width: 100%;
-    background-color: #eaeaea;
-    display: block;
-    z-index: 15;
-    -webkit-transform: scaleY(0.5);
-    transform: scaleY(0.5);
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: auto;
+  top: auto;
+  height: 1px;
+  width: 100%;
+  background-color: #eaeaea;
+  display: block;
+  z-index: 15;
+  -webkit-transform: scaleY(0.5);
+  transform: scaleY(0.5);
 }
 .school-list .school-item i {
-    float: right;
+  position: absolute;
+  right:10px;
+  top: 50%;
+  transform: translate(0, -50%);
   font-size: 14px;
   color: #9638ff;
 }
@@ -115,14 +129,14 @@ body{
   color: #666;
 }
 @media only screen and (min-width: 1025px) and (max-width: 1920px) {
-    .container{
-       width: 740px;
-        margin: 0 auto;
-    }
+  .container{
+    width: 740px;
+    margin: 0 auto;
+  }
 }
 
 input::-webkit-input-placeholder,
 textarea::-webkit-input-placeholder{
-    color: #c1c1c1;
-    font-family: '微软雅黑' !important;
+  color: #c1c1c1;
+  font-family: '微软雅黑' !important;
 }

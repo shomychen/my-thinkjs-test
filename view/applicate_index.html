@@ -74,6 +74,7 @@
 <script src="/static/js/vue.js"></script>
 <script src="https://unpkg.com/mint-ui/lib/index.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
 <script>
   var app = new Vue({
     el: '#app',
@@ -135,11 +136,11 @@
           _this.$messagebox('提示', '请填写' + (!_this.info.name ? '姓名' : '') + (!_this.info.phone ? '手机号码' : '') + '！');
         } else {
           axios({
-            url:'/applicate/add',
+            url:'/applicate/add', // 代理线上的接口 url:'/api/entering/add',
             method: 'POST',
             transformRequest: [function (data) {
-              let ret = ''
-              for (let it in data) {
+              var ret = ''
+              for (var it in data) {
                 ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
               }
               return ret
@@ -160,11 +161,11 @@
               phone: _this.info.phone,
             }
           }).then(function (res) {
-              if (res.errorCode === 999 || res.errorCode === '999') {
-                _this.$toast(res.msg);
+              if (res.data.errorCode === 999 || res.data.errorCode === '999') {
+                _this.$toast(res.data.msg);
               } else {
                 // 提交成功
-                _this.$toast(res.msg);
+                _this.$toast(res.data.msg);
                 _this.info = {
                   name: null,
                   age: null, // 年龄
@@ -218,6 +219,7 @@
     },
 
     mounted: function () {
+      var _this = this;
       if (window.wx) {
         var url = 'http://support.qiuxue001.xyz/wx/api/index.php?r=site/config';
         axios({
@@ -228,32 +230,27 @@
             'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
           },
         }).then(function (res) {
-          res.json().then(function (res) {
-            window.wx.config({
-              debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-              appId: res.appId, // 必填，公众号的唯一标识
-              timestamp: res.timestamp, // 必填，生成签名的时间戳
-              nonceStr: res.nonceStr, // 必填，生成签名的随机串
-              signature: res.signature,// 必填，签名
-              jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'hideMenuItems', 'showMenuItems', 'getLocation', 'openLocation'] // 必填，需要使用的JS接口列表
-            })
-            wx.ready(function () {
-              this.wxShare(true, window.location.href,'裘学入驻申请','https://vteach-file-1.oss-cn-shenzhen.aliyuncs.com/img/logo_wx_1.jpg','裘学赋能天下好老师！');
-            });
-            wx.error(function (res) {
-              // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
-              //alert('wx配置失败');
-            });
-            window.addEventListener('hashchange', function () {
-              this.wxShare(false);
-            })
+          window.wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: res.data.appId, // 必填，公众号的唯一标识
+            timestamp: res.data.timestamp, // 必填，生成签名的时间戳
+            nonceStr: res.data.nonceStr, // 必填，生成签名的随机串
+            signature: res.data.signature,// 必填，签名
+            jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'hideMenuItems', 'showMenuItems', 'getLocation', 'openLocation'] // 必填，需要使用的JS接口列表
+          })
+          wx.ready(function () {
+            _this.wxShare(true, window.location.href,'裘学入驻申请','https://vteach-file-1.oss-cn-shenzhen.aliyuncs.com/img/logo_wx_1.jpg','裘学赋能天下好老师！');
           });
+          wx.error(function (res) {
+          });
+          window.addEventListener('hashchange', function () {
+            _this.wxShare(false);
+          })
         });
-      }  /*
-            this.wxShare(true, location.href, '裘学', 'https://vteach-file-1.oss-cn-shenzhen.aliyuncs.com/img/logo_wx_1.jpg', '各类名师在此集结，丰富课程一应俱全。来裘学，一站式，学习全搞定！');*/
+      }
     }
   })
-
+  Vue.config.productionTip = false
 </script>
 </body>
 </html>
