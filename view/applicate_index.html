@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <meta name="format-detection" content="telephone=yes">
-  <title>申请入驻</title>
+  <title>入驻申请</title>
   <!-- 引入样式 -->
   <link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
   <link rel="stylesheet" href="static/css/index.css">
@@ -14,7 +14,6 @@
 <div id="app" class="wrap">
   <div class="header">
     <div class="header-ad">
-      <!--<img src="static/image/ad-icon.png"/>-->
     </div>
   </div>
   <div class="container">
@@ -22,9 +21,8 @@
       <div class="title">— 入驻申请 —</div>
       <div class="form-items">
         <mt-field label="姓名" placeholder="请输入姓名" v-model="info.name"></mt-field>
-        <mt-field label="年龄" placeholder="请输入年龄" type="number" v-model="info.age"></mt-field>
-        <mt-field label="教授科目" placeholder="请输入教授科目" v-model="info.subject"></mt-field>
-        <mt-field label="教龄" placeholder="请输入教龄" type="number" v-model="info.exAge"></mt-field>
+        <mt-field label="年龄" placeholder="请输入年龄" v-model="info.age"></mt-field>
+        <mt-field label="教龄" placeholder="请输入教龄" v-model="info.exAge"></mt-field>
         <mt-field label="擅长科目及年级" placeholder="多个科目或年级以,隔开" v-model="info.goodSubject"></mt-field>
         <mt-field label="教学经历" placeholder="请输入教学经历" type="textarea" rows="4" v-model="info.experience"></mt-field>
         <mt-field label="教学特色" placeholder="请输入教学特色" type="textarea" rows="4" v-model="info.characteristic"></mt-field>
@@ -43,8 +41,10 @@
         </div>
         <mt-popup v-model="popupSchool" class="school-popup" position="bottom">
           <div class="school-list" v-if="popupSchool">
-            <div class="school-item" v-for="(item, index) in schoolValues" :key="index" @click="handleSchoolPicker(item)">
-              {{item}}<i v-if="item === info.school" class="mintui mintui-success"></i>
+            <div class="school-item" v-for="(item, index) in schoolValues" :key="index" @click="handleSchoolPicker(item.name)">
+              <div class="name">{{item.name}}</div>
+              <div class="address">{{item.address}}</div>
+              <i v-if="item.name === info.school" class="mintui mintui-success"></i>
             </div>
           </div>
         </mt-popup>
@@ -79,22 +79,54 @@
     el: '#app',
     data: {
       info: {
-        name: null,
+        name: null, // 姓名
         age: null, // 年龄
-        subject: null, // 教授科目
         exAge: null, // 教龄
-        goodSubject: null,
+        goodSubject: null, // 擅长科目
         experience: null, // 教学经历
         characteristic: null, // 教学特色
         cases: null, // 教学成功案例
-        school: null,
-        certificate: null,
-        phone: null,
+        school: null, // 校区
+        certificate: null, // 获奖证书
+        phone: null, // 手机
       },
       popupPhoto: false,
       popupIndex: 0,
       popupSchool: false,
-      schoolValues: ['红岭校区', '百花校区', '五和校区', '宝安校区'],
+      schoolValues:[
+        {
+          name: '裘学红岭旗舰校区',
+          address: '福田区红岭中路2029-2041号商业裙楼全二层'
+        },
+        {
+          name: '裘学百花校区',
+          address: '福田区百花二路百花新天地裙楼四层（艺术学校对面）'
+        },
+        {
+          name: '裘学梅林校区',
+          address: '福田区梅林一村五区综合楼（华润万家超市二楼）'
+        },
+        {
+          name: '裘学莲花北校区',
+          address: '福田区莲花路莲花北村富莲大厦二栋三楼'
+        },
+        {
+          name: '裘学翠竹校区',
+          address: '罗湖区翠竹路翠都花园裙楼一层'
+        },
+        {
+          name: '裘学五和校区',
+          address: '龙岗区坂田街道四季花城紫薇苑商业街A02商铺'
+        },
+        {
+          name: '裘学田贝校区',
+          address: '罗湖区贝丽南路龙丽园裙楼一层106号'
+        },
+        {
+          name: '裘学宝安校区',
+          address: '宝安区香缤广场四楼（影尊电影院旁边）'
+        }
+      ],
     },
     methods: {
       handleClick: function (event) {
@@ -102,20 +134,32 @@
         if (!_this.info.name || !_this.info.phone) {
           _this.$messagebox('提示', '请填写' + (!_this.info.name ? '姓名' : '') + (!_this.info.phone ? '手机号码' : '') + '！');
         } else {
-          axios.post('/applicate/add', {
-            name: _this.info.name,
-            age: _this.info.age, // 年龄
-            subject: _this.info.subject, // 教授科目
-            exAge: _this.info.exAge, // 教龄
-            goodSubject: _this.info.goodSubject,
-            experience: _this.info.experience, // 教学经历
-            characteristic: _this.info.characteristic, // 教学特色
-            cases: _this.info.cases, // 教学成功案例
-            school: _this.info.school,
-            certificate: _this.info.certificate,
-            phone: _this.info.phone,
-          })
-            .then(function (res) {
+          axios({
+            url:'/applicate/add',
+            method: 'POST',
+            transformRequest: [function (data) {
+              let ret = ''
+              for (let it in data) {
+                ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+              }
+              return ret
+            }],
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data:{
+              name: _this.info.name,
+              age: _this.info.age, // 年龄
+              exAge: _this.info.exAge, // 教龄
+              goodSubject: _this.info.goodSubject,
+              experience: _this.info.experience, // 教学经历
+              characteristic: _this.info.characteristic, // 教学特色
+              cases: _this.info.cases, // 教学成功案例
+              school: _this.info.school,
+              certificate: _this.info.certificate,
+              phone: _this.info.phone,
+            }
+          }).then(function (res) {
               if (res.errorCode === 999 || res.errorCode === '999') {
                 _this.$toast(res.msg);
               } else {
@@ -124,7 +168,6 @@
                 _this.info = {
                   name: null,
                   age: null, // 年龄
-                  subject: null, // 教授科目
                   exAge: null, // 教龄
                   goodSubject: null,
                   experience: null, // 教学经历
@@ -137,47 +180,77 @@
               }
             })
             .catch(function (err) {
-              _this.$toast(res.msg);
+              _this.$toast(err);
             });
-        /*  axios({
-            headers: {
-              'Access-Control-Allow-Origin': '*'
-            },//设置跨域请求头
-            method: "POST",//请求方式
-            url: "http://127.0.0.1:8362/applicate/add",//请求地址
-            data: {
-              name: _this.info.name,
-              age: _this.info.age, // 年龄
-              subject: _this.info.subject, // 教授科目
-              exAge: _this.info.exAge, // 教龄
-              goodSubject: _this.info.goodSubject,
-              experience: _this.info.experience, // 教学经历
-              characteristic: _this.info.characteristic, // 教学特色
-              cases: _this.info.cases, // 教学成功案例
-              school: _this.info.school,
-              certificate: _this.info.certificate,
-              phone: _this.info.phone,
-            }
-          })
-            .then(function (res) {
-              // 返回值
-              if (res.errorCode === 999 || res.errorCode === '999') {
-                _this.$toast(res.msg);
-              } else {
-                _this.$toast(res.msg);
-              }
-            })
-            .catch(function (err) {
-              _this.$toast(res.msg);
-            });*/
         }
       },
       handleSchoolPicker: function (value) {
         this.info.school = value;
         this.popupSchool = false;
+      },
+      wxShare: function (open, url, title, img, desc) {
+        const menus = ['menuItem:share:appMessage', 'menuItem:share:timeline', 'menuItem:share:qq', 'menuItem:share:weiboApp', 'menuItem:favorite', 'menuItem:share:facebook', 'menuItem:share:QZone'] // 要隐藏的菜单项，只能隐藏“传播类”和“保护类”按钮，所有menu项见附录3
+        if (open) {
+          setTimeout(function() {
+            wx.showMenuItems({
+              menuList: menus // 要显示的菜单项，所有menu项见附录3
+            });
+            wx.onMenuShareAppMessage({
+              title: title, // 分享标题
+              desc: desc, // 分享描述
+              link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: img, // 分享图标
+            });
+            wx.onMenuShareTimeline({
+              title: title, // 分享标题
+              desc: desc, // 分享描述
+              link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: img, // 分享图标
+            });
+          }, 500);
+        } else {
+          wx.hideMenuItems({
+            menuList: menus
+          });
+        }
       }
+
     },
+
     mounted: function () {
+      if (window.wx) {
+        var url = 'http://support.qiuxue001.xyz/wx/api/index.php?r=site/config';
+        axios({
+          url: url,
+          method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data",
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+          },
+        }).then(function (res) {
+          res.json().then(function (res) {
+            window.wx.config({
+              debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+              appId: res.appId, // 必填，公众号的唯一标识
+              timestamp: res.timestamp, // 必填，生成签名的时间戳
+              nonceStr: res.nonceStr, // 必填，生成签名的随机串
+              signature: res.signature,// 必填，签名
+              jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'hideMenuItems', 'showMenuItems', 'getLocation', 'openLocation'] // 必填，需要使用的JS接口列表
+            })
+            wx.ready(function () {
+              this.wxShare(true, window.location.href,'裘学入驻申请','https://vteach-file-1.oss-cn-shenzhen.aliyuncs.com/img/logo_wx_1.jpg','裘学赋能天下好老师！');
+            });
+            wx.error(function (res) {
+              // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+              //alert('wx配置失败');
+            });
+            window.addEventListener('hashchange', function () {
+              this.wxShare(false);
+            })
+          });
+        });
+      }  /*
+            this.wxShare(true, location.href, '裘学', 'https://vteach-file-1.oss-cn-shenzhen.aliyuncs.com/img/logo_wx_1.jpg', '各类名师在此集结，丰富课程一应俱全。来裘学，一站式，学习全搞定！');*/
     }
   })
 
